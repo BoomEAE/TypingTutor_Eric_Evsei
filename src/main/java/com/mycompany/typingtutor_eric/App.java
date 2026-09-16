@@ -10,6 +10,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
+import java.util.ArrayList;
+import javafx.scene.control.TextField;
 
 
 
@@ -20,6 +22,9 @@ import javafx.scene.layout.HBox;
 public class App extends Application {
     
     private int counter = 0;
+    private int wrong;
+    private int right;
+    private int missing;
 
     @Override
     public void start(Stage mainStage) {
@@ -40,8 +45,11 @@ public class App extends Application {
         
         //TextField and Label instances
         Label textPhrase = new Label(phrases[0]);
+        textPhrase.setMinWidth(200);
         Label textCounter = new Label("1 of 6");
-        Label keyPressed = new Label("[Text typed will show here]");
+        TextField userText = new TextField();
+        Label trackerRight = new Label("RIGHT: " + right); //Track correct characters
+        Label trackerWrong = new Label("WRONG: " + wrong); 
         Button nextButton = new Button("next");
         Button resetButton = new Button("reset");
         
@@ -51,12 +59,12 @@ public class App extends Application {
         //Add the label and textfield
         top.getChildren().addAll(resetButton, textCounter, nextButton);
         center.add(textPhrase, 5, 1);
-        center.add(keyPressed, 5, 2);
+        center.add(userText, 5, 2);
         mainGridPane.add(top, 0, 0);
         mainGridPane.add(center, 0, 1);
-        mainGridPane.add(bottom, 0, 2);
-        
-        textPhrase.setMinWidth(200);
+        mainGridPane.add(trackerRight, 0, 2);
+        mainGridPane.add(trackerWrong, 0, 3);
+        mainGridPane.add(bottom, 0, 4);
         
         //Modifie a few columns
         GridPane.setColumnSpan(buttons[26], 2);
@@ -77,62 +85,105 @@ public class App extends Application {
         //
         nextButton.setOnAction(event -> {
             counter++;
-            textCounter.setText((counter+1) + " of 6");
+            textCounter.setText((counter+1) + " of " + phrases.length);
             textPhrase.setText(phrases[counter]);
         });
         
         //
         resetButton.setOnAction(event -> {
             counter = 0;
-            textCounter.setText("0 of 6");
+            textCounter.setText("1 of " + phrases.length);
             textPhrase.setText(phrases[counter]);
         });
         
         //
-        Scene scene = new Scene(root, 200, 200);
+        Scene scene = new Scene(root, 250, 250);
         
         //
-        scene.setOnKeyPressed(event -> {
-            String keyText = event.getCode().getName().toUpperCase();
-            System.out.println(keyText);
-            if(keyPressed.getText().equals("[Text typed will show here]")){
-                keyPressed.setText("");
-            }
-            
-            //
-            if(keyText.equals("BACKSPACE")){
-                int textLength = keyPressed.getText().length();
-                if(textLength > 0){
-                    String subText = keyPressed.getText().substring(0, textLength-1);
-                    
-                    if(subText.length() == 0){
-                        keyPressed.setText("[Text typed will show here]");
-                    }else{
-                        keyPressed.setText(subText);
-                    }
-                }
-            }else{
-                keyPressed.setText(keyPressed.getText() + keyText);
-            }
-            
-            
-            for(Button button : buttons){
+        userText.setOnKeyPressed(event -> {
+            String keyText = event.getCode().getName();
+             for(Button button : buttons){
                 if(keyText.equals(button.getText().toUpperCase())){
                     changeButtonStyle(button, 1);
-                }else if(button.getText().equals("Space")){
-                    if(keyText.equals(" ")){
-                        changeButtonStyle(button, 1);
-                    }
+                }else if(button.getText().equals("Space") && keyText.equals("Space")){
+                    changeButtonStyle(button, 1);
+                }else if(button.getText().equals("Shift") && keyText.equals("Shift")){
+                    changeButtonStyle(button, 1);
                 }
             }
         });
         
         //
-        scene.setOnKeyReleased(event -> {
+        userText.setOnKeyReleased(event -> {
+            String e = "";
+            ArrayList<String> list1 = new ArrayList<>();
+            ArrayList<String> list2 = new ArrayList<>();
+            
+            //To change the button's style back to default
             for(Button button : buttons){
                 if(event.getCode().getName().toLowerCase().equals(button.getText().toLowerCase())){
                     changeButtonStyle(button, 0);
                 }
+            }
+            
+            //
+            if(!userText.getText().equals("")){
+                for(int i = 0; i < textPhrase.getText().length(); i++){
+                    if(textPhrase.getText().charAt(i) == ' '){
+                        list1.add(e);
+                        e = "";
+                    }else{
+                        System.out.println("It's not equal to this Please!!!");
+                        e += textPhrase.getText().charAt(i);
+                    }
+                }
+                
+                list1.add(e);
+
+                e = "";
+
+                for(int i = 0; i < userText.getText().length(); i++){
+                    if(userText.getText().charAt(i) == ' '){
+                        list1.add(e);
+                        e = "";
+                    }else{
+                        e += userText.getText().charAt(i);
+                    }
+                }
+               
+                list2.add(e);
+                
+                int f;
+                
+                if(list1.size() > list2.size() || list1.size() == list2.size()){
+                    f = list2.size();
+                }else{
+                    f = list1.size();
+                }
+                
+                //
+                for(int i = 0; i < f; i++){
+                    int c = 0;
+                    if(list1.get(i).length() < list2.get(i).length()){
+                        c = list2.get(i).length() - list1.get(i).length();
+                        wrong += list2.get(i).length() - list1.get(i).length();
+                    }else{
+                        c = list1.get(i).length() - list2.get(i).length();
+                        missing += list1.get(i).length() - list2.get(i).length();
+                    }
+
+                    for(int j = 0; j < list1.get(i).length() - c; j++){
+                        if(list1.get(i).charAt(j) == list2.get(i).charAt(j)){
+                            right += 1;
+                        }else{
+                            wrong += 1;
+                        }
+                    }
+                }
+                
+                //
+                trackerWrong.setText("RIGHT: " + right);
+                trackerRight.setText("WRONG: " + wrong);
             }
         });
         
