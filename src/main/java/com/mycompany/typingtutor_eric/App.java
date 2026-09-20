@@ -22,14 +22,12 @@ import javafx.scene.control.TextField;
 public class App extends Application {
     
     private int counter = 0;
-    private int wrong;
-    private int right;
     private int missing;
 
     @Override
     public void start(Stage mainStage) {
         //Phrases
-        String phrases[] = {"Try typing this text. Do it as quickly and accurately as you can.",
+        String phrases[] = {"EE EE EE","Try typing this text. Do it as quickly and accurately as you can.",
                             "Next type another line of input data.",
                             "The quick brown fox jumps over the lazy `dog.",
                             "Five big quacking zephyrs jolt my wax bed.",
@@ -48,8 +46,10 @@ public class App extends Application {
         textPhrase.setMinWidth(200);
         Label textCounter = new Label("1 of 6");
         TextField userText = new TextField();
-        Label trackerRight = new Label("RIGHT: " + right); //Track correct characters
-        Label trackerWrong = new Label("WRONG: " + wrong); 
+        Label trackerRight = new Label("RIGHT: 0"); //Track correct characters
+        Label trackerWrong = new Label("WRONG: 0"); //Track incorrect characters
+        Label trackerPhrase = new Label("NOT DONE");
+        trackerPhrase.setStyle("-fx-text-fill:red");
         Button nextButton = new Button("next");
         Button resetButton = new Button("reset");
         
@@ -64,7 +64,8 @@ public class App extends Application {
         mainGridPane.add(center, 0, 1);
         mainGridPane.add(trackerRight, 0, 2);
         mainGridPane.add(trackerWrong, 0, 3);
-        mainGridPane.add(bottom, 0, 4);
+        mainGridPane.add(trackerPhrase, 0, 4);
+        mainGridPane.add(bottom, 0, 5);
         
         //Modifie a few columns
         GridPane.setColumnSpan(buttons[26], 2);
@@ -87,6 +88,11 @@ public class App extends Application {
             counter++;
             textCounter.setText((counter+1) + " of " + phrases.length);
             textPhrase.setText(phrases[counter]);
+            userText.setText("");
+            trackerRight.setText("RIGHT: 0");
+            trackerWrong.setText("WRONG: 0");
+            trackerPhrase.setText("NOT DONE");
+            trackerPhrase.setStyle("-fx-text-fill:red");
         });
         
         //
@@ -94,10 +100,15 @@ public class App extends Application {
             counter = 0;
             textCounter.setText("1 of " + phrases.length);
             textPhrase.setText(phrases[counter]);
+            userText.setText("");
+            trackerRight.setText("RIGHT: 0");
+            trackerWrong.setText("WRONG: 0");
+            trackerPhrase.setText("NOT DONE");
+            trackerPhrase.setStyle("-fx-text-fill:red");
         });
         
         //
-        Scene scene = new Scene(root, 250, 250);
+        Scene scene = new Scene(root, 400, 400);
         
         //
         userText.setOnKeyPressed(event -> {
@@ -115,9 +126,6 @@ public class App extends Application {
         
         //
         userText.setOnKeyReleased(event -> {
-            String e = "";
-            ArrayList<String> list1 = new ArrayList<>();
-            ArrayList<String> list2 = new ArrayList<>();
             
             //To change the button's style back to default
             for(Button button : buttons){
@@ -126,65 +134,7 @@ public class App extends Application {
                 }
             }
             
-            //
-            if(!userText.getText().equals("")){
-                for(int i = 0; i < textPhrase.getText().length(); i++){
-                    if(textPhrase.getText().charAt(i) == ' '){
-                        list1.add(e);
-                        e = "";
-                    }else{
-                        System.out.println("It's not equal to this Please!!!");
-                        e += textPhrase.getText().charAt(i);
-                    }
-                }
-                
-                list1.add(e);
-
-                e = "";
-
-                for(int i = 0; i < userText.getText().length(); i++){
-                    if(userText.getText().charAt(i) == ' '){
-                        list1.add(e);
-                        e = "";
-                    }else{
-                        e += userText.getText().charAt(i);
-                    }
-                }
-               
-                list2.add(e);
-                
-                int f;
-                
-                if(list1.size() > list2.size() || list1.size() == list2.size()){
-                    f = list2.size();
-                }else{
-                    f = list1.size();
-                }
-                
-                //
-                for(int i = 0; i < f; i++){
-                    int c = 0;
-                    if(list1.get(i).length() < list2.get(i).length()){
-                        c = list2.get(i).length() - list1.get(i).length();
-                        wrong += list2.get(i).length() - list1.get(i).length();
-                    }else{
-                        c = list1.get(i).length() - list2.get(i).length();
-                        missing += list1.get(i).length() - list2.get(i).length();
-                    }
-
-                    for(int j = 0; j < list1.get(i).length() - c; j++){
-                        if(list1.get(i).charAt(j) == list2.get(i).charAt(j)){
-                            right += 1;
-                        }else{
-                            wrong += 1;
-                        }
-                    }
-                }
-                
-                //
-                trackerWrong.setText("RIGHT: " + right);
-                trackerRight.setText("WRONG: " + wrong);
-            }
+            Segments(userText, textPhrase, trackerPhrase, trackerWrong, trackerRight);
         });
         
         mainStage.setScene(scene);
@@ -259,5 +209,78 @@ public class App extends Application {
                 break;
         }
     }
+    
+    public static void Segments(TextField userText, Label textPhrase, Label trackerPhrase, Label trackerWrong, Label trackerRight){
+        
+        String e = "";
+        ArrayList<String> list1 = new ArrayList<>();
+        ArrayList<String> list2 = new ArrayList<>();
+            
+        //
+        for(int i = 0; i < textPhrase.getText().length(); i++){
+            if(textPhrase.getText().charAt(i) == ' '){
+                list1.add(e);
+                e = "";
+            }else{
+                e += textPhrase.getText().charAt(i);
+            }
+        }
+                
+        //
+        list1.add(e);
+        e = "";
+                
+        //
+        for(int i = 0; i < userText.getText().length(); i++){
+            if(userText.getText().charAt(i) == ' '){
+                list2.add(e);
+                e = "";
+            }else{
+                e += userText.getText().charAt(i);
+            }
+        }
+                
+        //
+        list2.add(e);
+                
+        TEST1(list1, list2, textPhrase, trackerPhrase, trackerRight, trackerWrong, userText);
+    }
+    
+    public static void TEST1(ArrayList<String> list1, ArrayList<String> list2, Label textPhrase, Label trackerPhrase, Label trackerRight, Label trackerWrong, TextField userText){
 
+        //
+        int indexOf = Math.min(list1.size(), list2.size());
+        int right = 0;
+        int wrong = 0;
+        
+        //
+        for(int i = 0; i < indexOf; i++){
+            int minLen = Math.min(list1.get(i).length(), list2.get(i).length());
+                
+            for(int j = 0; j < minLen; j++){
+                if(list1.get(i).charAt(j) == list2.get(i).charAt(j)){
+                    right++;
+                }else{
+                    wrong++;
+                }
+            }
+            
+            if(list1.get(i).length() < list2.get(i).length()){
+                wrong += list2.get(i).length() - list1.get(i).length();
+            }
+        }
+            
+        //
+        trackerRight.setText("RIGHT: " + right);
+        trackerWrong.setText("WRONG: " + wrong);
+        
+        if(textPhrase.getText().equals(userText.getText())){
+                trackerPhrase.setText("DONE");
+                trackerPhrase.setStyle("-fx-text-fill:green");
+            }else{
+                trackerPhrase.setText("NOT DONE");
+                trackerPhrase.setStyle("-fx-text-fill:red");
+            }
+        
+    }
 }
