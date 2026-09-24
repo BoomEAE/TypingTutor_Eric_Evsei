@@ -12,7 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import java.util.ArrayList;
 import javafx.scene.control.TextField;
-
+import javafx.scene.input.KeyCode;
 
 
 
@@ -21,8 +21,8 @@ import javafx.scene.control.TextField;
  */
 public class App extends Application {
     
+    private final static char letters[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'};
     private int counter = 0;
-    private int missing;
 
     @Override
     public void start(Stage mainStage) {
@@ -45,6 +45,7 @@ public class App extends Application {
         Label trackerRight = new Label("RIGHT: 0"); //Track correct characters
         Label trackerWrong = new Label("WRONG: 0"); //Track incorrect characters
         Label trackerText = new Label("NOT DONE");
+        Label keyPressed = new Label("");
         trackerText.setStyle("-fx-text-fill:red");
         Button nextButton = new Button("next");
         Button resetButton = new Button("reset");
@@ -54,14 +55,15 @@ public class App extends Application {
         
         //Add the label and textfield
         top.getChildren().addAll(resetButton, textCounter, nextButton);
-        center.add(text, 5, 1);
-        center.add(userText, 5, 2);
+        center.add(keyPressed, 0, 0);
+        center.add(text, 0, 1);
+        center.add(userText, 0, 2);
         mainGridPane.add(top, 0, 0);
-        mainGridPane.add(center, 0, 1);
-        mainGridPane.add(trackerRight, 0, 2);
-        mainGridPane.add(trackerWrong, 0, 3);
-        mainGridPane.add(trackerText, 0, 4);
-        mainGridPane.add(bottom, 0, 5);
+        mainGridPane.add(center, 0, 2);
+        mainGridPane.add(trackerRight, 0, 3);
+        mainGridPane.add(trackerWrong, 0, 4);
+        mainGridPane.add(trackerText, 0, 5);
+        mainGridPane.add(bottom, 0, 6);
         
         //Modifie a few columns
         GridPane.setColumnSpan(buttons[26], 2);
@@ -103,38 +105,77 @@ public class App extends Application {
             trackerText.setStyle("-fx-text-fill:red");
         });
         
+       
+        
         //
         Scene scene = new Scene(root, 400, 400);
+        
+        mainStage.setScene(scene);
+        mainStage.show();
         
         //
         userText.setOnKeyPressed(event -> {
             String keyText = event.getCode().getName();
-             for(Button button : buttons){
+            boolean notHandled = true;
+            
+            for(Button button : buttons){
                 if(keyText.equals(button.getText().toUpperCase())){
                     changeButtonStyle(button, 1);
+                    keyPressed.setText(keyText.toLowerCase());
+                    keyPressed.setStyle("-fx-fill-color:white");
+                    notHandled = false;
                 }else if(button.getText().equals("Space") && keyText.equals("Space")){
                     changeButtonStyle(button, 1);
+                    keyPressed.setText("Space");
+                    keyPressed.setStyle("-fx-fill-color:white");
+                    notHandled = false;
                 }else if(button.getText().equals("Shift") && keyText.equals("Shift")){
                     changeButtonStyle(button, 1);
+                    keyPressed.setText("Shift");
+                    keyPressed.setStyle("-fx-fill-color:white");
+                    notHandled = false;
                 }
+            }
+            
+            if(notHandled){
+                keyPressed.setText("Not handled");
+                keyPressed.setStyle("-fx-fill-color:red");
             }
         });
         
         //
-        userText.setOnKeyReleased(event -> {
+        scene.setOnKeyReleased(event -> {
+            boolean keyIsHandled = true;
             
             //To change the button's style back to default
             for(Button button : buttons){
-                if(event.getCode().getName().toLowerCase().equals(button.getText().toLowerCase())){
-                    changeButtonStyle(button, 0);
+                changeButtonStyle(button, 0);
+            }
+            
+            //
+            if(!userText.getText().equals("")){
+                if(userText.getText().charAt(userText.getText().length()-1) != ' '){
+                    keyIsHandled = false;
+                    for(char character : letters){
+                        if(userText.getText().charAt(userText.getText().length()-1) == character){
+                            keyIsHandled = true;
+                            break;
+                        }
+                    }
                 }
             }
             
+            //
+            if(!keyIsHandled){
+                userText.setText(userText.getText().substring(0, userText.getText().length()-1));
+                
+                //
+                userText.positionCaret(userText.getText().length());
+            }
+            
+            //
             Segments(userText, text, trackerText, trackerWrong, trackerRight);
         });
-        
-        mainStage.setScene(scene);
-        mainStage.show();
     }
 
     public static void main(String[] args) {
@@ -144,7 +185,6 @@ public class App extends Application {
     //Creates and adds necessary buttons for the typing tutor program
     public static Button[] Create_Add_Buttons(GridPane gridPane){
         //
-        char letters[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'};
         Button buttons[] = new Button[28];
         
         //For loop that creates button instances corresponding to different keys on a keyboard

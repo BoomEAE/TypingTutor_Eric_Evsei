@@ -29,12 +29,12 @@ public class TextGenerator {
                                     "small", "since", "against", "ask", "late", "home", "interest", "large", "person", "end",
                                     "open", "public", "follow", "during", "present", "without", "again", "hold", "govern", "around",
                                     "possible", "head", "consider", "word", "program", "problem", "however", "lead", "system", "set",
-                                    "order", "eye", "plan", "run", "keep", "face", "fact", "group", "play", "stand"};
+                                    "order", "eye", "plan", "run", "keep", "face", "fact", "group", "play", "stand", "stupid"};
     
     int minWords;
     int maxWords;
     int numText;
-    
+   /*And now you can do multi line where we can become better people and love life with you my friend Eric the holy goat of presentation and you could make it organized because you are so wholesome and why isn't there so many classes and methods*/
     public TextGenerator(int minWords, int maxWords, int numText){
         this.minWords = minWords;
         this.maxWords = maxWords;
