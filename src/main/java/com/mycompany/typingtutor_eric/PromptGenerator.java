@@ -9,10 +9,12 @@ import java.util.Random;
  *
  * @author Eric
  */
-public class TextGenerator {
+public class PromptGenerator {
+    
+    //A list of 200 common words
     private String commonWords[] = {"the", "be", "is", "am", "are", "was", "were", "of", "and", "a",
                                     "to", "in", "he", "have", "it", "that", "for", "they", "I", "with",
-                                    "as", "nol", "on", "se", "at", "by", "this", "we", "you", "do",
+                                    "as", "nol", "on", "see", "at", "by", "this", "we", "you", "do",
                                     "but", "from", "or", "which", "one", "would", "all", "will", "there", "say",
                                     "who", "make", "when", "can", "more", "if", "no", "man", "out", "other",
                                     "so", "what", "time", "up", "go", "about", "than", "into", "could", "state",
@@ -29,37 +31,52 @@ public class TextGenerator {
                                     "small", "since", "against", "ask", "late", "home", "interest", "large", "person", "end",
                                     "open", "public", "follow", "during", "present", "without", "again", "hold", "govern", "around",
                                     "possible", "head", "consider", "word", "program", "problem", "however", "lead", "system", "set",
-                                    "order", "eye", "plan", "run", "keep", "face", "fact", "group", "play", "stand", "stupid"};
+                                    "order", "eye", "plan", "run", "keep", "face", "fact", "group", "play", "stand"};
+    
     
     int minWords;
     int maxWords;
-    int numText;
-   /*And now you can do multi line where we can become better people and love life with you my friend Eric the holy goat of presentation and you could make it organized because you are so wholesome and why isn't there so many classes and methods*/
-    public TextGenerator(int minWords, int maxWords, int numText){
+    int numPrompts;
+    
+   //TextGenerator constructor where you can choose the minimum and maximum of words that can be incuded in a prompt and the number of prompts to generate
+    public PromptGenerator(int minWords, int maxWords, int numPrompts){
         this.minWords = minWords;
         this.maxWords = maxWords;
-        this.numText = numText;
+        this.numPrompts = numPrompts;
     }
     
-    public String[] CreateTexts(){
-        Random rand = new Random();
-        String texts[] = new String[numText];
+    //Method to create the prompts
+    public String[] CreatePrompts(){
         
-        for(int i = 0; i < numText; i++){
-            int numWords = rand.nextInt((maxWords+1) - minWords) + minWords;
-            String text = "";
+        //Random
+        Random rand = new Random();
+        
+        //A new list of size equal to the number of prompts chosen
+        String prompts[] = new String[numPrompts];
+        
+        //Iterate through the list of blank prompts
+        for(int i = 0; i < numPrompts; i++){
             
+            //The program chooses a random number of words to include into the prompt according to the min and max of words chosen
+            int numWords = rand.nextInt((maxWords+1) - minWords) + minWords;
+
+            String prompt = "";
+            
+            //For each word, the program chooses a random word from the list of words
+            //When it reaches the last word to add, don't add a space after adding the word
             for(int j = 0; j < numWords; j++){
                 if(j == numWords-1){
-                    text += commonWords[rand.nextInt(commonWords.length)];
+                    prompt += commonWords[rand.nextInt(commonWords.length)];
                 }else{
-                    text += commonWords[rand.nextInt(commonWords.length)] + " ";
+                    prompt += commonWords[rand.nextInt(commonWords.length)] + " ";
                 }
             }
             
-            texts[i] = text;
+            //Add the newly made prompt to the list of prompts
+            prompts[i] = prompt;
         }
         
-        return texts;
+        //return every prompt created
+        return prompts;
     }
 }
