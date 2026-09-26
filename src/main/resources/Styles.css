@@ -1,0 +1,25 @@
+#keyHandled{
+    -fx-text-fill:blue;
+}
+
+#keyNotHandled{
+    -fx-text-fill:red;
+}
+
+#promptNotDone{
+    -fx-text-fill:red;
+}
+
+#promptDone{
+    -fx-text-fill:green;
+}
+
+#keyboardBtnPressed{
+    -fx-background-radius: 15; 
+    -fx-background-color: #CC5500;
+}
+
+#keyboardBtnReleased{
+    -fx-background-radius: 15; 
+    -fx-background-color: #FFD700;
+}

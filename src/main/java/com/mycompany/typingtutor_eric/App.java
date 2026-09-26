@@ -16,14 +16,15 @@ import javafx.scene.control.TextField;
 
 
 /**
- * JavaFX App
+ * JavaFX Typing Tutor app
+ * @author Éric André Evsei
  */
 public class App extends Application {
     
-    //list of letters
+    /**list of letters*/
     private final static char letters[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'};
     
-    //Keep track of on which prompt the user is on
+    /**Keep track of on which prompt the user is on*/
     private int promptNum = 1;
 
     @Override
@@ -46,13 +47,14 @@ public class App extends Application {
         Label trackerRight = new Label("RIGHT: 0"); //Track correct characters
         Label trackerWrong = new Label("WRONG: 0"); //Track incorrect characters
         Label isPromptTyped = new Label("NOT DONE"); //Track if the text as been typed up correctly
-        isPromptTyped.setStyle("-fx-text-fill:red");
+        isPromptTyped.setId("promptNotDone");
         Label keyPressed = new Label("");
         Label prompt = new Label(texts[0]);
         prompt.setMinWidth(200);
         
         //Create next and reset button
         Button nextButton = new Button("next");
+        nextButton.setDisable(true);
         Button resetButton = new Button("reset");
         
         //Create and add keyboard buttons to the bottom pane
@@ -73,7 +75,6 @@ public class App extends Application {
         //Modifie a few columns so that they're larger and don't disturb other nodes
         GridPane.setColumnSpan(buttons[26], 2);
         GridPane.setColumnSpan(buttons[27], 2);
-        
         
         //Add margins so that each sections have space in between
         GridPane.setMargin(top, new Insets(0, 0, 20, 0));
@@ -102,7 +103,10 @@ public class App extends Application {
             
             //Reset the label that tells the user if they are done or not back to default settings
             isPromptTyped.setText("NOT DONE");
-            isPromptTyped.setStyle("-fx-text-fill:red");
+            isPromptTyped.setId("promptNotDone");
+            
+            //Disable the next button
+            nextButton.setDisable(true);
         });
         
         //Event handler when nextReset is clicked
@@ -124,13 +128,15 @@ public class App extends Application {
             
             //Reset the label that tells the user if they are done or not back to default settings
             isPromptTyped.setText("NOT DONE");
-            isPromptTyped.setStyle("-fx-text-fill:red");
+            isPromptTyped.setId("promptNotDone");
+            
+            //Disable the next button
+            nextButton.setDisable(true);
         });
-        
-       
         
         //Ceate and show the scene
         Scene scene = new Scene(root, 400, 400);
+        scene.getStylesheets().add("Styles.css");
         mainStage.setScene(scene);
         mainStage.show();
         
@@ -148,19 +154,19 @@ public class App extends Application {
             //and also change the style of the specific button that represents the key pressed physically 
             for(Button button : buttons){
                 if(keyText.equals(button.getText().toUpperCase())){
-                    changeButtonStyle(button, 1);
+                    button.setId("keyboardBtnPressed");
                     keyPressed.setText(keyText.toLowerCase());
-                    keyPressed.setStyle("-fx-fill-color:white");
+                    keyPressed.setId("#keyHandled");
                     notHandled = false;
                 }else if(button.getText().equals("Space") && keyText.equals("Space")){
-                    changeButtonStyle(button, 1);
+                    button.setId("keyboardBtnPressed");
                     keyPressed.setText("Space");
-                    keyPressed.setStyle("-fx-fill-color:white");
+                    keyPressed.setId("#keyHandled");
                     notHandled = false;
                 }else if(button.getText().equals("Shift") && keyText.equals("Shift")){
-                    changeButtonStyle(button, 1);
+                    button.setId("keyboardBtnPressed");
                     keyPressed.setText("Shift");
-                    keyPressed.setStyle("-fx-fill-color:white");
+                    keyPressed.setId("#keyHandled");
                     notHandled = false;
                 }
             }
@@ -168,7 +174,7 @@ public class App extends Application {
             //If the key isn't handled, then update the keyPressed label with the appropriate text and change its style to red
             if(notHandled){
                 keyPressed.setText("Not handled");
-                keyPressed.setStyle("-fx-fill-color:red");
+                keyPressed.setId("keyNotHandled");
             }
         });
         
@@ -178,19 +184,22 @@ public class App extends Application {
             //If the key should be handled, then it stays true
             boolean keyIsHandled = true;
             
+            //Get the text in the text field
+            String userTypedText = userText.getText();
+            
             //To change the button's style back to default
             for(Button button : buttons){
-                changeButtonStyle(button, 0);
+                button.setId("keyboardBtnReleased");
             }
             
             //We check if the text field isn't empty
-            if(!userText.getText().equals("")){
+            if(!userTypedText.equals("")){
                 
                 //Get the last character the user typed
-                char targetChar = userText.getText().charAt(userText.getText().length()-1);
+                char targetChar = userTypedText.charAt(userText.getText().length()-1);
                 
                 //If it is not a space then we check if it's a letter
-                if(userText.getText().charAt(userText.getText().length()-1) != ' '){
+                if(userTypedText.charAt(userTypedText.length()-1) != ' '){
                     keyIsHandled = false;
                     
                     //Iterate through all 26 letters
@@ -218,7 +227,7 @@ public class App extends Application {
             userText.positionCaret(userText.getText().length());
             
             //To update the trackers
-            Segments(userText, prompt, isPromptTyped, trackerWrong, trackerRight);
+            Segments(userText, prompt, isPromptTyped, trackerWrong, trackerRight, nextButton);
         });
     }
 
@@ -226,7 +235,11 @@ public class App extends Application {
         launch();
     }
     
-    //Creates and adds necessary buttons for the typing tutor program
+    /**
+     * Creates and adds necessary buttons to create the keyboard for the typing tutor program
+     * @param gridPane represents the main gridPane where everything is placed
+     * @return buttons which is the set of all the buttons used to make the keyboard
+     */
     public static Button[] Create_Add_Buttons(GridPane gridPane){
         
         //New list of 28 buttons that will represent the 28 keys that the user can use on a physical keyboard
@@ -249,7 +262,7 @@ public class App extends Application {
                     buttons[i].setMinWidth(30);
                     break;
             }
-            changeButtonStyle(buttons[i], 0);
+            buttons[i].setId("keyboardBtnReleased");
         }
         
         //For loop to iterate through the buttons list and adds them to the gridPane following the Label and TextField
@@ -274,27 +287,16 @@ public class App extends Application {
         return buttons;
     }
     
-    //Sets a style sheet to a button
-    public static void changeButtonStyle(Button button, int sheetNum /*0 being the default stylesheet and 1 being the alternative*/){
-        
-        //Stylesheets in String format
-        String defaultCssSheet = "-fx-background-radius: 15; -fx-background-color: #FFD700";
-        String alternativeCssSheet = "-fx-background-radius: 15; -fx-background-color: #CC5500";
-        
-        //We check which sheet as been selected by the program
-        //and set the appropriate style sheet to the button according to the sheet number selected
-        switch(sheetNum){
-            case 0:
-                button.setStyle(defaultCssSheet);
-                break;
-            case 1:
-                button.setStyle(alternativeCssSheet);
-                break;
-        }
-    }
-    
-    //Cuts the text in the textField and prompt text into segments and stores them into their respective list
-    public static void Segments(TextField userText, Label prompt, Label trackerText, Label trackerWrong, Label trackerRight){
+    /**
+     * Cuts the text in the textField and prompt text into segments and stores them into their respective list
+     * @param userText is the text field where the user types
+     * @param prompt is the label that contains the prompt that the user is expected to type
+     * @param trackerText is the label that tells the user if they're done with the prompt or not
+     * @param trackerWrong is the label that keeps counts of the characters that are wrong
+     * @param trackerRight is the label that keeps counts of the characters that are right
+     * @param nextButton is the button to go to the next prompt
+     */
+    public static void Segments(TextField userText, Label prompt, Label trackerText, Label trackerWrong, Label trackerRight, Button nextButton){
         
         String word = "";
         
@@ -332,11 +334,21 @@ public class App extends Application {
         textFieldWords.add(word);
                 
         //Update the wrong and right label
-        UpdateTrackers(promptWords, textFieldWords, prompt, trackerText, trackerRight, trackerWrong, userText);
+        UpdateTrackers(promptWords, textFieldWords, prompt, trackerText, trackerRight, trackerWrong, userText, nextButton);
     }
     
-    //
-    public static void UpdateTrackers(ArrayList<String> promptWords, ArrayList<String> textFieldWords, Label prompt, Label trackerText, Label trackerRight, Label trackerWrong, TextField userText){
+    /**
+     * Updates the wrong and right tracking labels
+     * @param promptWords is a list of 'words' extracted from the prompt label
+     * @param textFieldWords is a list of 'words' extracted from the text field
+     * @param prompt is the label that contains the prompt that the user is expected to type
+     * @param trackerText is the label that tells the user if they're done with the prompt or not
+     * @param trackerRight is the label that keeps counts of the characters that are right
+     * @param trackerWrong is the label that keeps counts of the characters that are wrong
+     * @param userText is the text field where the user types
+     * @param nextButton is the button to go to the next prompt
+     */
+    public static void UpdateTrackers(ArrayList<String> promptWords, ArrayList<String> textFieldWords, Label prompt, Label trackerText, Label trackerRight, Label trackerWrong, TextField userText, Button nextButton){
 
         //Gets the minimum index between the two arraylists 
         int indexOf = Math.min(promptWords.size(), textFieldWords.size());
@@ -372,10 +384,12 @@ public class App extends Application {
         //Check if the user typed all off the right characters in order to say that the user is done with the prompt
         if(prompt.getText().equals(userText.getText())){
             trackerText.setText("DONE");
-            trackerText.setStyle("-fx-text-fill:green");
+            trackerText.setId("promptDone");
+            nextButton.setDisable(false);
         }else{
             trackerText.setText("NOT DONE");
-            trackerText.setStyle("-fx-text-fill:red");
+            trackerText.setId("promptNotDone");
+            nextButton.setDisable(true);
         }
         
     }
