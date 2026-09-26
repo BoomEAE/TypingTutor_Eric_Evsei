@@ -6,12 +6,12 @@ package com.mycompany.typingtutor_eric;
 import java.util.Random;
 
 /**
- *
+ *Generates random prompts according to a list of words
  * @author Eric
  */
 public class PromptGenerator {
     
-    //A list of 200 common words
+    /**A list of 200 common words*/
     private String commonWords[] = {"the", "be", "is", "am", "are", "was", "were", "of", "and", "a",
                                     "to", "in", "he", "have", "it", "that", "for", "they", "I", "with",
                                     "as", "nol", "on", "see", "at", "by", "this", "we", "you", "do",
@@ -33,19 +33,31 @@ public class PromptGenerator {
                                     "possible", "head", "consider", "word", "program", "problem", "however", "lead", "system", "set",
                                     "order", "eye", "plan", "run", "keep", "face", "fact", "group", "play", "stand"};
     
-    
+    /**The minimum words that can exist in a prompt*/
     int minWords;
+    
+    /**The maximum words that can exist in a prompt*/
     int maxWords;
+    
+    /**The number of prompts for it to generate*/
     int numPrompts;
     
-   //TextGenerator constructor where you can choose the minimum and maximum of words that can be incuded in a prompt and the number of prompts to generate
+    /**
+     * TextGenerator constructor where you can choose the minimum and maximum of words that can be incuded in a prompt and the number of prompts to generate
+     * @param minWords is the minimum words that can exist in a prompt
+     * @param maxWords The maximum words that can exist in a prompt
+     * @param numPrompts The number of prompts for it to generate
+     */
     public PromptGenerator(int minWords, int maxWords, int numPrompts){
         this.minWords = minWords;
         this.maxWords = maxWords;
         this.numPrompts = numPrompts;
     }
     
-    //Method to create the prompts
+    /**
+     * Method to create the prompts
+     * @return prompts list with newly created prompts
+     */
     public String[] CreatePrompts(){
         
         //Random
