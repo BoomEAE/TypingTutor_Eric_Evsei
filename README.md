@@ -1,4 +1,4 @@
-# TypingTutor_Eric_Evsei
+# TypingTutor
 A typing tutor program by Éric André Evsei
 
 ## Overview
